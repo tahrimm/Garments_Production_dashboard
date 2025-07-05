@@ -27,3 +27,16 @@ This project aims to:
   - Flags status as ✅ OK, 🟠 Delay, or 🔴 Bottleneck.
 - **Detailed Job Matrix**: Job-level view of quantities across all stages with totals.
 
+---
+## 🧩 Data Model Architecture
+
+![Data Model View](./Model_View.PNG)
+
+---
+
+## 🧠 Insights Enabled
+
+- Which production stages are underperforming over time?
+- Are there any bottlenecks between stages based on quantity or date delay?
+- How is production progressing by quarter, month, buyer, or order?
+- Where is the highest drop-off in production occurring?
