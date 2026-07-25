@@ -4,7 +4,7 @@ A production tracking dashboard for garment manufacturing, built on top of a rel
  
 I built this because most factory dashboards I've come across just report totals per stage. They don't tell you *where* the process is leaking. This one does.
  
-![Dashboard view](./Dashboard_view.PNG)
+![Dashboard view](./Dashboards_view.PNG)
  
 ---
  
