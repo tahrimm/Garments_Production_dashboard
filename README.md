@@ -1,42 +1,70 @@
-# 🧵 Garments Production Dashboard – Power BI
-
-A comprehensive Power BI dashboard that visualizes the end-to-end **garment production flow** — from yarn allocation to ex-factory delivery. This dashboard is built to help production and planning teams monitor stage-wise progress, identify bottlenecks, and analyze performance using a date-driven ETL model.
-
-![Dashboard Screenshot](./Dashboards_view.PNG)
-
+# Garments Production Dashboard (Power BI)
+ 
+A production tracking dashboard for garment manufacturing, built on top of a relational ERP schema I designed from scratch. It follows a single job order through every stage — yarn allocation, knitting, dyeing, finishing, cutting, sewing, packing, and delivery — and surfaces exactly where things are slowing down before it becomes a shipping problem.
+ 
+I built this because most factory dashboards I've come across just report totals per stage. They don't tell you *where* the process is leaking. This one does.
+ 
+![Dashboard view](./Dashboard_view.PNG)
+ 
 ---
-
-## 📌 Objective
-
-This project aims to:
-- Centralize multiple production stage datasets into a unified, interactive report.
-- Provide real-time insights into daily production status by Job, Buyer, and Order.
-- Highlight delays and bottlenecks between stages to support faster decision-making.
-- Allow filtering and drilling down using shipment and production dates.
-
+ 
+## Why this exists
+ 
+In garment production, a small delay at one stage rarely stays small. A slow cutting run doesn't show up as a problem until sewing output starts falling behind, and by the time it hits shipping, there's no time left to fix it. Most planning teams find out after the fact — from a missed shipment date, not from the data.
+ 
+This project started as a question: could I model the entire production chain in a proper relational database, then build a dashboard on top that flags a bottleneck the moment it starts forming, instead of after it compounds?
+ 
+## What it does
+ 
+- Pulls every production stage into one connected model instead of scattered spreadsheets
+- Shows real-time totals by Job No, Buyer, and Order Status
+- Flags each stage as OK, Delay, or Bottleneck based on the percentage drop-off compared to the stage before it
+- Lets you drill into a single job, buyer, or shipment date and see the full stage-by-stage trail
+- Breaks down monthly and quarterly trends for knitting, finishing, and cutting output
+## Key features
+ 
+**KPI cards** — running totals for each stage (CuttingQty, SewingOut, ShippingQty, etc.), updated as new production records come in.
+ 
+**Slicers** — filter the whole report by Job No, Buyer, Order Status, Shipment Date, or Production Date.
+ 
+**Trend line chart** — monthly view of production quantities across stages, so you can spot a slowdown before it becomes a pattern.
+ 
+**Quarter-wise comparison chart** — knitting, finishing, and cutting output side by side, quarter over quarter.
+ 
+**Bottleneck table** — this is the core of the project. For each stage, it calculates the percentage quantity drop from the previous stage and flags it:
+- ✅ OK — within expected variance
+- 🟠 Delay — drop-off is higher than normal but not critical
+- 🔴 Bottleneck — significant loss between stages, needs attention
+**Job matrix** — a full job-level breakdown showing quantities across every stage, with totals, so you can trace one order end to end.
+ 
 ---
-
-## 📊 Key Features
-
-- **Unified KPI cards**: Real-time totals for each stage (e.g., CuttingQty, SewingOut, ShippingQty).
-- **Dynamic slicers**: Filter by Job No, Buyer, Order Status, Shipment Date, and Production Date.
-- **Trend Analysis Line Chart**: Monthly performance of key production quantities.
-- **Cumulative Comparison Bar Chart**: Quarter-wise comparison of knitting, finishing, and cutting outputs.
-- **Stage-wise Bottleneck Table**:
-  - Automatically calculates percentage drop between stages.
-  - Flags status as ✅ OK, 🟠 Delay, or 🔴 Bottleneck.
-- **Detailed Job Matrix**: Job-level view of quantities across all stages with totals.
-
+ 
+## The data model
+ 
+I designed the schema myself rather than working off an existing template. `Orders` is the hub table (keyed on `JobNo`), and every production stage is a child table that references it.
+ 
+**Database structure (MySQL):**
+ 
+![Database structure](./Database_Structure.png)
+ 
+**Power BI data model view:**
+ 
+![Data model view](./Model_View.PNG)
+ 
+One deliberate design decision worth calling out: dyeing isn't a flat one-to-many like the other stages. It's modeled as **DyeingBatch → DyeingProduction**, because a single job can be split across multiple dye lots, and each batch can go through more than one dyeing run before it's finished. Flattening that into a single table would've lost real information — a job's dyed quantity isn't always one clean number, it's the sum of however many batches and runs it took to get there. Every other stage (cutting, sewing input/output, packing, delivery) is a straightforward one-to-many off `Orders`, since those genuinely are single events per job.
+ 
+## What this shows about how I work
+ 
+- I model data before I build reports on top of it — the dashboard is only as good as the schema underneath, and I treated this like a real ERP design problem, not just a BI exercise
+- I look for where a domain has real structural nuance (the dyeing batch/run relationship) instead of flattening everything for convenience
+- I build for the decision someone needs to make (where's the bottleneck?) rather than just displaying numbers
+## Questions this dashboard can answer
+ 
+- Which stage is underperforming, and since when?
+- Is a specific job or buyer's order falling behind, and where exactly?
+- How does this quarter's output compare to last quarter, by stage?
+- Where is the biggest drop-off happening across the whole pipeline?
 ---
-## 🧩 Data Model Architecture
-
-![Data Model View](./Model_View.PNG)
-
----
-
-## 🧠 Insights Enabled
-
-- Which production stages are underperforming over time?
-- Are there any bottlenecks between stages based on quantity or date delay?
-- How is production progressing by quarter, month, buyer, or order?
-- Where is the highest drop-off in production occurring?
+ 
+Built in Power BI, with the data model and ETL logic designed around a MySQL schema (`Orders` + 10 related stage tables). Screenshots above are from the live report.
+ 
