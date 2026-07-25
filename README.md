@@ -2,7 +2,7 @@
 
 A comprehensive Power BI dashboard that visualizes the end-to-end **garment production flow** — from yarn allocation to ex-factory delivery. This dashboard is built to help production and planning teams monitor stage-wise progress, identify bottlenecks, and analyze performance using a date-driven ETL model.
 
-![Dashboard Screenshot](./Dashboard_view.PNG)
+![Dashboard Screenshot](./Dashboards_view.PNG)
 
 ---
 
